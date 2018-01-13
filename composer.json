@@ -1,0 +1,19 @@
+{
+    "name": "carlosroberto555/express-php",
+    "description": "Biblioteca para roteamento (Similar a ExpressJS)",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carlos Roberto",
+            "email": "carlosrpj555@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "ExpressPHP\\":"src/"
+        }
+    }
+}
