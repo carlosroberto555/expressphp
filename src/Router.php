@@ -1,16 +1,16 @@
 <?php
-/**
- * PHP Router based
- * 
- * author: Carlos Roberto
- * date: 18/12/2017
- */
-
 namespace ExpressPHP;
 
 class Router {
 
-	private $routes = []; // As rotas da aplicação
+	// As rotas da aplicação
+	private $routes = [
+		'GET' => [],
+		'PUT' => [],
+		'POST' => [],
+		'DELETE' => [],
+	];
+
 	private $path = '';   // Path da aplicação
 	public $home = '/';   // Página home da aplicação
 	public $uri = '/';    // Uri atual do navegador
@@ -59,7 +59,14 @@ class Router {
 		$route->method = $method;
 		$route->callback = $callback;
 
-		$this->routes[] = $route;
+		if ($method !== '*') {
+			$this->routes[$method][] = $route;
+		} else {
+			$this->routes['GET'][] = &$route;
+			$this->routes['POST'][] = &$route;
+			$this->routes['PUT'][] = &$route;
+			$this->routes['DELETE'][] = &$route;
+		}
 	}
 
 	public function use($path = '/', $file = '')
@@ -83,7 +90,9 @@ class Router {
 
 	public function submit()
 	{
-		foreach ($this->routes as $value)
+		$method = $_SERVER['REQUEST_METHOD'];
+
+		foreach ($this->routes[$method] as $value)
 		{
 			// Cria o regex da rota atual
 			$regex = $this->route_regex($value->uri);
@@ -93,30 +102,36 @@ class Router {
 				// Extrai os parâmetros da url
 				$this->req->params = $this->extract_params($this->uri, $value->uri, $regex);
 
-				if ($_SERVER['REQUEST_METHOD'] === $value->method || $value->method === '*')
+				if (is_callable($value->callback[0]))
 				{
-					if (is_callable($value->callback[0]))
-					{
-						// Quando função
-						$this->exec_callbacks($value->callback);
-					}
-					else if (is_string($value->callback[0]))
-					{
-						// Quando arquivo
-						$this->include($value->callback[0]);
-					}
-					else {
-						$this->res->type($value->callback['type']);
-						echo file_get_contents(ltrim($this->uri, '/'));
-					}
-
-					return;
+					// Quando função
+					$this->exec_callbacks($value->callback);
 				}
+				else if (is_string($value->callback[0]))
+				{
+					// Quando arquivo
+					$this->include($value->callback[0]);
+				}
+				else {
+					$this->res->type($value->callback['type']);
+					echo file_get_contents(ltrim($this->uri, '/'));
+				}
+
+				return;
 			}
 		}
 
 		$this->res->status(404);
 		die;
+	}
+
+	public function getRoutes($method = '*')
+	{
+		if ($method === '*') {
+			return $this->routes;
+		} else {
+			return $this->routes[$method];
+		}
 	}
 
 	/**
@@ -218,83 +233,4 @@ function trim_params ($value) {
 
 function trim_uri($uri) {
 	return $uri !== '/' ? rtrim($uri, '/') : '/';
-}
-
-namespace ExpressPHP\Router;
-
-class Route {
-	public $uri;
-	public $method;
-	public $callback;
-}
-
-class Request {
-	public $body;
-	public $query;
-	public $user;
-	public $uri;
-
-	function __construct($uri = '/') {
-
-		$this->uri = $uri;
-		$this->query = (object) $_GET;
-		$this->user = isset($_SESSION['user']) ? (object) $_SESSION['user'] : null;
-
-		if ($this->type('application/json')) {
-			$this->body = json_decode(file_get_contents('php://input'));
-		} else {
-			$this->body = (object) $_POST;
-		}
-	}
-
-	public function type($value) {
-		return isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] === $value : false;
-	}
-
-	public function query ($key) {
-		return isset($this->query->$key) ? $this->query->$key : null;
-	}
-
-	public function body ($key) {
-		return isset($this->body->$key) ? $this->body->$key : null;
-	}
-}
-
-class Response {
-
-	private $home;
-
-	public function __construct($home = '') {
-		$this->home = $home;
-	}
-
-	public function send($resp) {
-		echo $resp;
-	}
-
-	public function json($resp) {
-		$this->type('application/json');
-		echo json_encode($resp);
-	}
-
-	public function status($status) {
-		http_response_code($status);
-	}
-
-	public function header($key, $value) {
-		header("$key: $value");
-	}
-
-	public function location($loc) {
-		$loc = $this->home . $loc;
-		$this->header('Location', $loc);
-	}
-
-	public function type($type) {
-		$this->header('Content-Type', "$type; charset=utf-8");
-	}
-
-	public function end() {
-		exit;
-	}
 }
