@@ -135,6 +135,13 @@ class Router {
 	}
 
 	/**
+	 * Retorna o caminho real da url desejada de acordo com a home da aplicação
+	 */
+	public function realpath($path = '/') {
+		return trim_uri($this->home . $path);
+	}
+
+	/**
 	 * Define o path da aplicação removendo a '/' da direita
 	 * (Path atual de início)
 	 */
