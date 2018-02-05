@@ -114,7 +114,7 @@ class Router {
 				}
 				else {
 					$this->res->type($value->callback['type']);
-					echo file_get_contents(ltrim($this->uri, '/'));
+					readfile(ltrim($this->uri, '/'));
 				}
 
 				return;
