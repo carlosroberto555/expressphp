@@ -1,7 +1,16 @@
 <?php
 namespace ExpressPHP;
 
-class Router {
+class Router implements Router\RouterCallable {
+
+	function __invoke($req, $res, $next) {
+
+		Express::$router = $this;
+		$this->req = &Express::$req;
+		$this->res = &Express::$res;
+
+		$next();
+	}
 
 	// As rotas da aplicação
 	private $routes = [
