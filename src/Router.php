@@ -11,7 +11,7 @@ class Router {
 		'DELETE' => [],
 	];
 
-	private $path = '';   // Path da aplicação
+	public $path = '';   // Path da aplicação
 	public $home = '/';   // Página home da aplicação
 	public $uri = '/';    // Uri atual do navegador
 
