@@ -20,20 +20,25 @@ class Express {
 		};
 	}
 
-	public static function get($path, ...$callbacks) {
+	public static function get($path, callable ...$callbacks) {
 		self::request($path, 'GET', ...$callbacks);
+	}
+
+	public static function all($path, ...$callbacks)
+	{
+		self::use($path.'$', ...$callbacks);
 	}
 
 	public static function request($path, $method, ...$callbacks)
 	{
-		if ($_SERVER['REQUEST_METHOD'] == $method && preg_match("#$path$#", $_SERVER['REQUEST_URI'])) {
-			self::use(...$callbacks);
+		if ($_SERVER['REQUEST_METHOD'] == $method) {
+			self::all($path, ...$callbacks);
 		} else {
 			self::$next = true;
 		}
 	}
 
-	public static function use($path, ...$callbacks) {
+	public static function use($path, callable ...$callbacks) {
 
 		// Se não tiver next, encerra
 		if (!self::$next) return;
@@ -43,12 +48,14 @@ class Express {
 			array_unshift($callbacks, $path);
 			$path = '/';
 		}
-
-		// Pega o path atual
-		self::$req->local = (object) ['path' => $path];
-
-		// Executa os callbacks
+		
+		// Verifica se a rota bate
 		if (preg_match("#$path#", $_SERVER['REQUEST_URI'])) {
+
+			// Pega o path atual
+			self::$req->local = (object) ['path' => $path];
+
+			// Executa os callbacks
 			foreach ($callbacks as $callback) {
 
 				if (!self::$next) break;
