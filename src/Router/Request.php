@@ -4,14 +4,14 @@ namespace ExpressPHP\Router;
 class Request {
 	public $body;
 	public $query;
-	public $user;
 	public $uri;
+	public $params;
+	public $local;
 
 	function __construct($uri = '/') {
 
 		$this->uri = $uri;
 		$this->query = (object) $_GET;
-		$this->user = isset($_SESSION['user']) ? (object) $_SESSION['user'] : null;
 
 		if ($this->type('application/json')) {
 			$this->body = json_decode(file_get_contents('php://input'));
