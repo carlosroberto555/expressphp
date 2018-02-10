@@ -8,7 +8,14 @@ class Request {
 	public $params;
 	public $local;
 
+	public $method;
+	public $originalUrl;
+	public $path;
+
 	function __construct($uri = '/') {
+
+		$this->method = $_SERVER['REQUEST_METHOD'];
+		$this->originalUrl = $_SERVER['REQUEST_URI'];
 
 		$this->uri = $uri;
 		$this->query = (object) $_GET;

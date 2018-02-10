@@ -17,7 +17,7 @@ class Response {
 		$this->type('application/json');
 
 		if (DEBUG) {
-			echo json_encode($resp, JSON_PRETTY_PRINT);
+			echo json_encode($resp, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 		} else {
 			echo json_encode($resp);
 		}

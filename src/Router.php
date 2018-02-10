@@ -1,165 +1,71 @@
 <?php
 namespace ExpressPHP;
 
-class Router implements Router\RouterCallable {
+class Router {
 
-	function __invoke($req, $res, $next) {
-
-		Express::$router = $this;
-		$this->req = &Express::$req;
-		$this->res = &Express::$res;
-
-		$next();
+	public function get($path, callable ...$callbacks) {
+		$this->request($path, 'GET', ...$callbacks);
 	}
 
-	// As rotas da aplicação
-	private $routes = [
-		'GET' => [],
-		'PUT' => [],
-		'POST' => [],
-		'DELETE' => [],
-	];
+	public function put($path, callable ...$callbacks) {
+		$this->request($path, 'PUT', ...$callbacks);
+	}
 
-	public $path = '';   // Path da aplicação
-	public $home = '/';   // Página home da aplicação
-	public $uri = '/';    // Uri atual do navegador
+	public function post($path, callable ...$callbacks) {
+		$this->request($path, 'POST', ...$callbacks);
+	}
 
-	private $req; // Objeto do requisição
-	private $res; // Objeto da resposta
+	public function delete($path, callable ...$callbacks) {
+		$this->request($path, 'DELETE', ...$callbacks);
+	}
 
-	function __construct($home = '/')
+	public function all($path, ...$callbacks)
 	{
-		// Home da aplicação
-		$this->home = trim_uri($home);
-		
-		// Adiciona a uri
-		preg_match("@$home([^?]*)@", $_SERVER['REQUEST_URI'], $matches);
-		$this->uri = trim_uri($matches[1]);
-
-		$this->req = new Router\Request($this->uri);
-		$this->res = new Router\Response($home);
+		$this->use($path.'$', ...$callbacks);
 	}
 
-	public function all($uri, ...$callback) {
-		$this->request($uri, '*', $callback);
-	}
-
-	public function get($uri, ...$callback) {
-		$this->request($uri, 'GET', $callback);
-	}
-
-	public function post($uri, ...$callback) {
-		$this->request($uri, 'POST', $callback);
-	}
-
-	public function put($uri, ...$callback) {
-		$this->request($uri, 'PUT', $callback);
-	}
-
-	public function delete($uri, ...$callback) {
-		$this->request($uri, 'DELETE', $callback);
-	}
-
-	public function request($uri = '/', $method = '*', $callback)
+	public function request($path, $method, ...$callbacks)
 	{
-		$route = new Router\Route();
-
-		$route->uri = rtrim($this->path . $uri, '/');
-		$route->method = $method;
-		$route->callback = $callback;
-
-		if ($method !== '*') {
-			$this->routes[$method][] = $route;
-		} else {
-			$this->routes['GET'][] = &$route;
-			$this->routes['POST'][] = &$route;
-			$this->routes['PUT'][] = &$route;
-			$this->routes['DELETE'][] = &$route;
+		if ($_SERVER['REQUEST_METHOD'] == $method) {
+			$this->all($path, ...$callbacks);
 		}
 	}
 
-	public function use($path = '/', $file = '')
-	{
-		// Passa a instância de router e o path atual
-		$router = $this;
-		$this->path = rtrim($this->path . $path, '/');
+	public function use($path, callable ...$callbacks) {
 
-		// Inclui o arquivo com sub-rotas
-		include $file;
+		// Se não tiver next, encerra
+		static $next = true;
+		
+		// Se passar uma função sem path
+		if (is_callable($path)) {
+			array_unshift($callbacks, $path);
+			$path = '/';
+		}
 
-		// Remove o path atual e desaloca o router
-		$this->path = str_replace($path, '', $this->path);
-		unset($router);
-	}
+		$regex = $this->route_regex($path);
+		
+		// Verifica se a rota bate
+		if ($this->route_matches($regex, $match)) {
 
-	public function files($path = '/', $type = 'text/plain')
-	{
-		$this->request($path.'/.*', 'GET', [0 => false, 'type' => $type]);
-	}
+			$this->req->baseUrl = $this->req->app->mountpath . $match;
 
-	public function submit()
-	{
-		$method = $_SERVER['REQUEST_METHOD'];
+			// Pega o path atual
+			$this->req->path = $path;
 
-		foreach ($this->routes[$method] as $value)
-		{
-			// Cria o regex da rota atual
-			$regex = $this->route_regex($value->uri);
+			// Executa os callbacks
+			foreach ($callbacks as $callback) {
 
-			if ($this->route_matches($regex))
-			{
-				// Extrai os parâmetros da url
-				$this->req->params = $this->extract_params($this->uri, $value->uri, $regex);
+				if (!$next) break;
+				$next = false;
 
-				if (is_callable($value->callback[0]))
-				{
-					// Quando função
-					$this->exec_callbacks($value->callback);
-				}
-				else if (is_string($value->callback[0]))
-				{
-					// Quando arquivo
-					$this->include($value->callback[0]);
-				}
-				else {
-					$this->res->type($value->callback['type']);
-					readfile(ltrim($this->uri, '/'));
-				}
-
-				return;
+				$callback($this->req, $this->res, function () use (&$next) {
+					$next = true;
+				});
 			}
 		}
-
-		$this->res->status(404);
-		die;
 	}
 
-	public function getRoutes($method = '*')
-	{
-		if ($method === '*') {
-			return $this->routes;
-		} else {
-			return $this->routes[$method];
-		}
-	}
-
-	/**
-	 * Retorna o caminho real da url desejada de acordo com a home da aplicação
-	 */
-	public function realpath($path = '/') {
-		return trim_uri($this->home . $path);
-	}
-
-	/**
-	 * Define o path da aplicação removendo a '/' da direita
-	 * (Path atual de início)
-	 */
-	private function setPath($path)
-	{
-		rtrim($this->path . $path, '/');
-	}
-
-	public function matches($uri) {
+	private function matches($uri) {
 		$regex = $this->route_regex($uri);
 		return $this->route_matches($regex);
 	}
@@ -167,86 +73,31 @@ class Router implements Router\RouterCallable {
 	/**
 	 * Gera o regex para a rota atual
 	 */
-	private function route_regex($uri) {
+	private function route_regex($uri, $exact = false)
+	{
 		$uri = preg_replace('/(:\w+)/', '(\w+)', $uri);
-		return "#^$uri/?$#" ;
+
+		if ($exact) {
+			return "#^($uri)/?$#";
+		} else {
+			return "#($uri)/?#";
+		}
 	}
 
 	/**
 	 * Verifica se a rota bate com a uri atual
 	 */
-	private function route_matches($regex) {
-		return preg_match($regex, $this->uri);
-	}
-
-	/**
-	 * Extrai os parâmetros da rota
-	 */
-	private function extract_params($uri, $path, $regex)
+	private function route_matches($regex, &$match)
 	{
-		preg_match_all('/:\w+/', $path, $matches);
-		$params = array_map('ExpressPHP\trim_params', $matches[0]);
+		preg_match($regex, $this->req->originalUrl, $matches);
 
-		preg_match($regex, $uri, $values);
-		unset($values[0]);
-		
-		return (object) array_combine($params, $values);
-	}
+		print_r($matches);
 
-	/**
-	 * Executa os callbacks passando o next como parâmetro
-	 */
-	private function exec_callbacks($callbacks)
-	{
-		$next = false; // Flag next que controla se deve executar o próximo callback
-
-		foreach ($callbacks as $callback) {
-			
-			// Coloca false na flag next
-			$next = false;
-
-			// Verifica se é callback
-			if (is_callable($callback))
-			{
-				// Executa o callback com a função next
-				$callback($this->req, $this->res, function () use (&$next) {
-					$next = true;
-				});
-			}
-			else
-			{
-				// Inclui o arquivo
-				$this->include($callback);
-			}
-
-			// Se a função next não for chamada, encerra
-			if (!$next) return;
+		if (!empty($matches)) {
+			$match = $matches[0];
+			return true;
 		}
+
+		return false;
 	}
-
-	public function include($file)
-	{
-		// Declara para ser acessível pelo arquivo
-		$req = $this->req;
-		$res = $this->res;
-		$router = $this;
-
-		include $file;
-	}
-
-	public function include_logged($file)
-	{
-		if ($this->req->user != null) {
-			$this->include($file);
-		}
-	}
-}
-
-// Função para remover os ':' dos parâmetros
-function trim_params ($value) {
-	return ltrim($value, ':');
-}
-
-function trim_uri($uri) {
-	return $uri !== '/' ? rtrim($uri, '/') : '/';
 }
