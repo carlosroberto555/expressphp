@@ -21,83 +21,66 @@ class Router {
 
 	public function all(string $path, ...$callbacks)
 	{
-		$this->use($path.'$', ...$callbacks);
+		$this->request($path, '.*', ...$callbacks);
 	}
 
 	public function request(string $path, string $method, callable ...$callbacks)
 	{
-		if ($_SERVER['REQUEST_METHOD'] == $method) {
-			$this->all($path, ...$callbacks);
+		if (preg_match("/$method/", $_SERVER['REQUEST_METHOD'])) {
+
+			$url = str_replace($this->req->baseUrl, '', $this->req->url);
+			$route = new Router\Route($this->req->baseUrl, $path, $callbacks);
+
+			// Verifica se a rota bate
+			if ($route->matches($url, true)) {
+
+				$this->req->route = $route;
+				$this->req->path = $route->result_path;
+				$this->req->params = $route->params;
+				$this->req->baseUrl = $this->req->app->mounturl;
+
+				$this->execute_callbacks($callbacks);
+			}
 		}
 	}
 
 	public function use($path, callable ...$callbacks) {
 
-		// Se não tiver next, encerra
-		static $next = true;
-		
 		// Se passar uma função sem path
 		if (is_callable($path)) {
 			array_unshift($callbacks, $path);
 			$path = '/';
 		}
 
-		$regex = $this->route_regex($path);
-		
+		$url = str_replace($this->req->app->mounturl, '', $this->req->url);
+		$route = new Router\Route($this->req->app->mounturl, $path, $callbacks);
+
 		// Verifica se a rota bate
-		if ($this->route_matches($regex, $match)) {
+		if ($route->matches($url)) {
 
-			$this->req->baseUrl = $this->req->app->mountpath . $match;
+			$this->req->route = $route;
+			$this->req->path = $route->result_path;
+			$this->req->params = $route->params;
+			$this->req->baseUrl = $this->req->app->mounturl.$route->result_baseUrl;
 
-			// Pega o path atual
-			$this->req->path = $path;
-
-			// Executa os callbacks
-			foreach ($callbacks as $callback) {
-
-				if (!$next) break;
-				$next = false;
-
-				$callback($this->req, $this->res, function () use (&$next) {
-					$next = true;
-				});
-			}
+			$this->execute_callbacks($callbacks);
 		}
 	}
 
-	private function matches($uri) {
-		$regex = $this->route_regex($uri);
-		return $this->route_matches($regex);
-	}
-
-	/**
-	 * Gera o regex para a rota atual
-	 */
-	private function route_regex($uri, $exact = false)
+	public function execute_callbacks(array $callbacks)
 	{
-		$uri = preg_replace('/(:\w+)/', '(\w+)', $uri);
+		// Se não tiver next, encerra
+		static $next = true;
 
-		if ($exact) {
-			return "#^($uri)/?$#";
-		} else {
-			return "#($uri)/?#";
+		// Executa os callbacks
+		foreach ($callbacks as $callback) {
+
+			if (!$next) break;
+			$next = false;
+
+			$callback($this->req, $this->res, function () use (&$next) {
+				$next = true;
+			});
 		}
-	}
-
-	/**
-	 * Verifica se a rota bate com a uri atual
-	 */
-	private function route_matches($regex, &$match)
-	{
-		preg_match($regex, $this->req->originalUrl, $matches);
-
-		print_r($matches);
-
-		if (!empty($matches)) {
-			$match = $matches[0];
-			return true;
-		}
-
-		return false;
 	}
 }
