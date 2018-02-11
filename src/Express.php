@@ -40,24 +40,23 @@ class Express extends Router {
 	public function require($file)
 	{
 		return function ($req, $res, $next) use ($file) {
-			// $router = $this->router;
-			// $router->path = $this->path;
 			require $file;
 			$next();
 		};
 	}
 
 	public function Router() {
-		return new Express($this->path);
+
+		$router = new Router();
+		$router->req = $this->req;
+		$router->res = $this->res;
+
+		return $router;
 	}
 
 	function trim_uri($uri) {
 		return $uri !== '/' ? rtrim($uri, '/') : '/';
 	}
-
-	public function teste() : Express {
-		return new Express;
-}
 
 	public function __get($name) {
 		return $this->props[$name];
