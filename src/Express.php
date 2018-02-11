@@ -3,7 +3,9 @@ namespace ExpressPHP;
 
 class Express extends Router {
 	private $props = [
-		'mountpath' => ''
+		'mountregexp' => '',
+		'mountpath' => '',
+		'mounturl' => ''
 	];
 
 	public $router;
@@ -16,16 +18,18 @@ class Express extends Router {
 
 	public function __construct($mountpath = '')
 	{
-		if (empty($mountpath)) {
-			$this->props['mountpath'] = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
-		}
-
 		$this->uri = preg_replace("#$this->home#", '', $_SERVER['REQUEST_URI']);
 
 		$this->req = new Router\Request($this->uri);
 		$this->res = new Router\Response($this->home);
 
 		$this->req->app = $this;
+
+		if (empty($mountpath)) {
+			$this->props['mountpath'] = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
+			$this->props['mountregexp'] = preg_replace('/(:\w+)/', '(\w+)', $this->props['mountpath']);
+			$this->props['mounturl'] = preg_replace('#('.$this->props['mountregexp'].').*#', '$1', $this->req->url);
+		}
 	}
 
 	public function __invoke($req, $res, $next)
