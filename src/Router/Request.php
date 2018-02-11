@@ -8,12 +8,15 @@ class Request {
 	public $params;
 	public $local;
 
-	public $method;
+	public $url;
+	public $baseUrl;
 	public $originalUrl;
+	public $method;
 	public $path;
 
 	function __construct($uri = '/') {
 
+		$this->url = preg_replace('/\?.*/', '', $_SERVER['REQUEST_URI']);
 		$this->method = $_SERVER['REQUEST_METHOD'];
 		$this->originalUrl = $_SERVER['REQUEST_URI'];
 
