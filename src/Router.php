@@ -3,28 +3,28 @@ namespace ExpressPHP;
 
 class Router {
 
-	public function get($path, callable ...$callbacks) {
+	public function get(string $path, callable ...$callbacks) {
 		$this->request($path, 'GET', ...$callbacks);
 	}
 
-	public function put($path, callable ...$callbacks) {
+	public function put(string $path, callable ...$callbacks) {
 		$this->request($path, 'PUT', ...$callbacks);
 	}
 
-	public function post($path, callable ...$callbacks) {
+	public function post(string $path, callable ...$callbacks) {
 		$this->request($path, 'POST', ...$callbacks);
 	}
 
-	public function delete($path, callable ...$callbacks) {
+	public function delete(string $path, callable ...$callbacks) {
 		$this->request($path, 'DELETE', ...$callbacks);
 	}
 
-	public function all($path, ...$callbacks)
+	public function all(string $path, ...$callbacks)
 	{
 		$this->use($path.'$', ...$callbacks);
 	}
 
-	public function request($path, $method, ...$callbacks)
+	public function request(string $path, string $method, callable ...$callbacks)
 	{
 		if ($_SERVER['REQUEST_METHOD'] == $method) {
 			$this->all($path, ...$callbacks);
