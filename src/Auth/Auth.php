@@ -7,6 +7,7 @@ abstract class Auth implements \ExpressPHP\Router\RouterCallable {
 	public abstract function get_user();
 	public abstract function is_authenticated() : bool;
 	public abstract function authenticate($user, $pass);
+	public abstract function use_strategie($req, $res) : bool;
 
 	public function session_start() {
 		if (session_status() == PHP_SESSION_NONE) {
@@ -23,10 +24,16 @@ abstract class Auth implements \ExpressPHP\Router\RouterCallable {
 	 */
 	public function __invoke($req, $res, $next) {
 
-		$this->session_start();
-
-		$req->auth = $this;
-		$req->user = &$this->user;
+		// Se essa estratégia estiver disponível
+		if ($this->use_strategie($req, $res))
+		{
+			// Inicia a sessão
+			$this->session_start();
+	
+			// Atribui o usuário
+			$req->auth = $this;
+			$req->user = &$this->user;
+		}
 
 		$next();
 	}

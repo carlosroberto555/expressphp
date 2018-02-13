@@ -3,6 +3,13 @@ namespace ExpressPHP\Auth;
 
 abstract class BasicAuth extends Auth {
 
+	public function use_strategie($req, $res) : bool
+	{
+		$headers = apache_request_headers();
+		return isset($headers['Authorization'])
+				&& strpos($headers['Authorization'], 'Basic') !== false;
+	}
+
 	public function get_user() {
 		return isset($_SESSION['user']) ? (object) $_SESSION['user'] : null;
 	}
