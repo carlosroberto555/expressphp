@@ -50,6 +50,14 @@ class Express extends Router {
 		};
 	}
 
+	public static function static($path, $type='*/*') {
+		return function ($req, $res, $next) use ($path, $type) {
+			$res->type($type);
+			readfile($path.$req->path);
+			$res->end();
+		};
+	}
+
 	public static function Router() {
 
 		$app = end(self::$instances);
