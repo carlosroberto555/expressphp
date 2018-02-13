@@ -2,6 +2,9 @@
 namespace ExpressPHP;
 
 class Express extends Router {
+	
+	private static $instances = [];
+
 	private $props = [
 		'mountregexp' => '',
 		'mountpath' => '',
@@ -18,6 +21,7 @@ class Express extends Router {
 
 	public function __construct($mountpath = '')
 	{
+		self::$instances[] = $this;
 		$this->uri = preg_replace("#$this->home#", '', $_SERVER['REQUEST_URI']);
 
 		$this->req = new Router\Request($this->uri);
@@ -38,7 +42,7 @@ class Express extends Router {
 		$this->props['mountpath'] = $req->app->mountpath;
 	}
 
-	public function require($file)
+	public static function require($file)
 	{
 		return function ($req, $res, $next) use ($file) {
 			require $file;
@@ -46,11 +50,14 @@ class Express extends Router {
 		};
 	}
 
-	public function Router() {
+	public static function Router() {
 
+		$app = end(self::$instances);
 		$router = new Router();
-		$router->req = $this->req;
-		$router->res = $this->res;
+
+		$router->req = $app->req;
+		$router->res = $app->res;
+		self::$instances[] = $router;
 
 		return $router;
 	}
