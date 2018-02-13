@@ -27,7 +27,7 @@ class Route {
 	public function matches($url, $exact = false)
 	{
 		$this->regexp = $this->regexp($this->path, $exact);
-		preg_match($this->regexp, $this->mounturl.$url, $matches);
+		preg_match("#$this->regexp#", $this->mounturl.$url, $matches);
 
 		if (!empty($matches))
 		{
@@ -59,9 +59,9 @@ class Route {
 		$path = $path == '/' ? '' : $path;
 
 		if ($exact) {
-			return "#^$this->mounturl($path)(/?)$#";
+			return "^$this->mounturl($path)(/?)$";
 		} else {
-			return "#$this->mounturl($path)(/?.*)#";
+			return "$this->mounturl($path)(/?.*)";
 		}
 	}
 
