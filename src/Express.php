@@ -23,13 +23,14 @@ class Express extends Router {
 		$this->req = new Router\Request($this->uri);
 		$this->res = new Router\Response($this->home);
 
-		$this->req->app = $this;
-
 		if (empty($mountpath)) {
 			$this->props['mountpath'] = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
 			$this->props['mountregexp'] = preg_replace('/(:\w+)/', '(\w+)', $this->props['mountpath']);
 			$this->props['mounturl'] = preg_replace('#('.$this->props['mountregexp'].').*#', '$1', $this->req->url);
 		}
+
+		$this->req->app = $this;
+		$this->req->baseUrl = $this->mounturl;
 	}
 
 	public function __invoke($req, $res, $next)
@@ -60,6 +61,10 @@ class Express extends Router {
 
 	public function __get($name) {
 		return $this->props[$name];
+	}
+
+	public function __set($name, $value) {
+		throw new \Exception('Campo de apenas leitura');
 	}
 }
 
