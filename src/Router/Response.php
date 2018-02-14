@@ -19,6 +19,10 @@ class Response {
 		$type = \MimeType\MimeType::getType($path);
 		$this->type($type);
 
+		// Disable auto download
+		$file = pathinfo($path, PATHINFO_BASENAME);
+		$this->header('Content-Disposition', "inline; filename=\"$file\"");
+
 		// Send file to buffer
 		readfile($path);
 		$this->end();
