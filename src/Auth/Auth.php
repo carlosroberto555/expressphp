@@ -24,6 +24,9 @@ abstract class Auth implements \ExpressPHP\Router\RouterCallable {
 	 */
 	public function __invoke($req, $res, $next) {
 
+		// Passa a instância do usuário
+		$this->user = $this->get_user();
+
 		// Se essa estratégia estiver disponível
 		if ($this->use_strategie($req, $res))
 		{
