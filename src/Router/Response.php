@@ -3,10 +3,10 @@ namespace ExpressPHP\Router;
 
 class Response {
 
-	private $home;
+	public $mounturl;
 
-	public function __construct($home = '') {
-		$this->home = $home;
+	public function __construct($mounturl = '') {
+		$this->mounturl = $mounturl;
 	}
 
 	public function send($resp) {
@@ -47,7 +47,7 @@ class Response {
 	}
 
 	public function location($loc) {
-		$loc = $this->home . $loc;
+		$loc = $this->mounturl . $loc;
 		$this->header('Location', $loc);
 	}
 
