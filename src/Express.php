@@ -24,7 +24,7 @@ class Express extends Router {
 		$this->uri = preg_replace("#$this->home#", '', $_SERVER['REQUEST_URI']);
 
 		$this->req = new Router\Request();
-		$this->res = new Router\Response($this->home);
+		$this->res = new Router\Response($this->mounturl);
 
 		if (empty($mountpath)) {
 			$this->props['mountpath'] = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
@@ -34,6 +34,7 @@ class Express extends Router {
 
 		$this->req->app = $this;
 		$this->req->baseUrl = $this->mounturl;
+		$this->res->mounturl = $this->mounturl;
 	}
 
 	public function __invoke($req, $res, $next)
