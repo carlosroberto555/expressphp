@@ -63,6 +63,7 @@ class Express extends Router {
 
 		$router->req = $app->req;
 		$router->res = $app->res;
+		$router->mounturl = $app->mounturl;
 		self::$instances[] = $router;
 
 		return $router;
