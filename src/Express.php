@@ -49,11 +49,9 @@ class Express extends Router {
 		};
 	}
 
-	public static function static($path, $type='*/*') {
-		return function ($req, $res, $next) use ($path, $type) {
-			$res->type($type);
-			readfile($path.$req->path);
-			$res->end();
+	public static function static($path, $options = []) {
+		return function ($req, $res) use ($path) {
+			$res->sendFile($path);
 		};
 	}
 
@@ -81,4 +79,3 @@ class Express extends Router {
 		throw new \Exception('Campo de apenas leitura');
 	}
 }
-

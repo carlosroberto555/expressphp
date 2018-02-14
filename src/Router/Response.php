@@ -21,6 +21,7 @@ class Response {
 
 		// Send file to buffer
 		readfile($path);
+		$this->end();
 	}
 
 	public function json($resp) {
