@@ -51,7 +51,7 @@ class Express extends Router {
 
 	public static function static($path, $options = []) {
 		return function ($req, $res) use ($path) {
-			$res->sendFile($path);
+			$res->sendFile($path.$req->path);
 		};
 	}
 
