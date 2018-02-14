@@ -29,7 +29,7 @@ class Router {
 		if (preg_match("/$method/", $_SERVER['REQUEST_METHOD'])) {
 
 			$url = str_replace($this->req->baseUrl, '', $this->req->url);
-			$route = new Router\Route($this->req->baseUrl, $path, $callbacks);
+			$route = new Router\Route($this->req->baseUrl, $path);
 
 			// Verifica se a rota bate
 			if ($route->matches($url, true)) {
@@ -53,7 +53,7 @@ class Router {
 		}
 
 		$url = str_replace($this->req->app->mounturl, '', $this->req->url);
-		$route = new Router\Route($this->req->app->mounturl, $path, $callbacks);
+		$route = new Router\Route($this->req->app->mounturl, $path);
 
 		// Verifica se a rota bate
 		if ($route->matches($url)) {

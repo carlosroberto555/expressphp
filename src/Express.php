@@ -11,7 +11,6 @@ class Express extends Router {
 		'mounturl' => ''
 	];
 
-	public $router;
 	public $req;
 	public $res;
 
@@ -24,7 +23,7 @@ class Express extends Router {
 		self::$instances[] = $this;
 		$this->uri = preg_replace("#$this->home#", '', $_SERVER['REQUEST_URI']);
 
-		$this->req = new Router\Request($this->uri);
+		$this->req = new Router\Request();
 		$this->res = new Router\Response($this->home);
 
 		if (empty($mountpath)) {
@@ -83,6 +82,3 @@ class Express extends Router {
 	}
 }
 
-// Express::$req = new Router\Request(Express::$uri);
-// Express::$res = new Router\Response(Express::$home);
-// Express::use(new Router(Express::$home));

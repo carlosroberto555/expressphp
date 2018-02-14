@@ -4,9 +4,7 @@ namespace ExpressPHP\Router;
 class Request {
 	public $body;
 	public $query;
-	public $uri;
 	public $params;
-	public $local;
 
 	public $url;
 	public $baseUrl;
@@ -14,13 +12,12 @@ class Request {
 	public $method;
 	public $path;
 
-	function __construct($uri = '/') {
+	function __construct() {
 
 		$this->url = preg_replace('/\?.*/', '', $_SERVER['REQUEST_URI']);
 		$this->method = $_SERVER['REQUEST_METHOD'];
 		$this->originalUrl = $_SERVER['REQUEST_URI'];
 
-		$this->uri = $uri;
 		$this->query = (object) $_GET;
 
 		if ($this->type('application/json')) {

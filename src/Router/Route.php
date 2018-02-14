@@ -5,7 +5,6 @@ class Route {
 	private $mounturl;
 
 	public $path;
-	public $stack;
 	public $regexp;
 
 	public $params;
@@ -14,10 +13,9 @@ class Route {
 	public $result_baseUrl;
 	public $result_path;
 
-	public function __construct($mounturl, $path, ...$callbacks)
+	public function __construct($mounturl, $path)
 	{
 		$this->path = $path;
-		// $this->stack = $callbacks;
 		$this->mounturl = $mounturl;
 
 		preg_match_all('/:(\w+)/', $path, $params);
