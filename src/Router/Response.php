@@ -13,6 +13,16 @@ class Response {
 		echo $resp;
 	}
 
+	public function sendFile($path)
+	{
+		// Get the mime-type
+		$type = \MimeType\MimeType::getType($path);
+		$this->type($type);
+
+		// Send file to buffer
+		readfile($path);
+	}
+
 	public function json($resp) {
 		$this->type('application/json');
 
@@ -23,8 +33,8 @@ class Response {
 		}
 	}
 
-	public function status($status) {
-		http_response_code($status);
+	public function status($status = null) {
+		return http_response_code($status);
 	}
 
 	public function header($key, $value) {
@@ -40,7 +50,7 @@ class Response {
 		$this->header('Content-Type', "$type; charset=utf-8");
 	}
 
-	public function end() {
-		exit;
+	public function end($message = null) {
+		exit ($message);
 	}
 }

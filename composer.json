@@ -10,7 +10,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "katzien/php-mime-type": "dev-master"
+    },
     "autoload": {
         "psr-4": {
             "ExpressPHP\\":"src/"
