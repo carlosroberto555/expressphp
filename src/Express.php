@@ -31,15 +31,15 @@ class Express extends Router {
 		$this->req->baseUrl = $this->mounturl;
 	}
 
-	public function __invoke($req, $res, $next)
-	{
+	public function __invoke($req, $res, $next) {
+		$this->props['mountregexp'] = $req->app->mountregexp;
 		$this->props['mountpath'] = $req->app->mountpath;
+		$this->props['mounturl'] = $req->app->mounturl;
 	}
 
 	public static function require($file)
 	{
 		return function ($req, $res, $next) use ($file) {
-			require $file;
 			$next();
 			require $file;
 		};
