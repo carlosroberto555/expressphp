@@ -35,10 +35,14 @@ class Express extends Router {
 		$this->req->baseUrl = $this->mounturl;
 	}
 
-	public function __invoke($req, $res, $next) {
+	public function __invoke($req, $res, $next)
+	{
 		$this->props['mountregexp'] = $req->app->mountregexp;
 		$this->props['mountpath'] = $req->app->mountpath;
 		$this->props['mounturl'] = $req->app->mounturl;
+
+		$this->req->baseUrl = $req->baseUrl;
+		$next();
 	}
 
 	public static function require($file)
@@ -58,7 +62,7 @@ class Express extends Router {
 	public static function Router() {
 
 		$app = end(self::$instances);
-		$router = new Express($app->req->baseUrl);
+		$router = new Express($app->req->baseUrl.$app->req->path);
 
 		$router->req = clone $app->req;
 		$router->res = clone $app->res;

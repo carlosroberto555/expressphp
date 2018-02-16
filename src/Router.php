@@ -29,7 +29,7 @@ class Router {
 
 			$url = str_replace($this->req->baseUrl, '', $this->req->url);
 			$route = new Router\Route($this->req->baseUrl, $path);
-
+			
 			// Verifica se a rota bate
 			if ($route->matches($url, true)) {
 
