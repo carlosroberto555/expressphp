@@ -3,16 +3,15 @@ namespace ExpressPHP;
 
 class Express extends Router {
 	
-	private static $instances = [];
+	// Application trait
+	use Application;
 
+	// Read-only props
 	private $props = [
 		'mountregexp' => '',
 		'mountpath' => '',
 		'mounturl' => ''
 	];
-
-	public $req;
-	public $res;
 
 	public function __construct($mountpath = '')
 	{
