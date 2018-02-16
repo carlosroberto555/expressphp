@@ -5,8 +5,8 @@ class Response {
 
 	public $mounturl;
 
-	public function __construct($mounturl = '') {
-		$this->mounturl = $mounturl;
+	public function __construct() {
+		$this->mounturl = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
 	}
 
 	public function send($resp) {
@@ -47,7 +47,7 @@ class Response {
 	}
 
 	public function location($loc) {
-		$loc = $this->mounturl . $loc;
+		$loc = $this->mounturl.$loc;
 		$this->header('Location', $loc);
 	}
 

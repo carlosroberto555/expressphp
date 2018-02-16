@@ -41,7 +41,7 @@ class Route {
 			
 			unset($matches[0], $matches[1]);
 			$this->params = (object) array_combine($this->params, $matches);
-			
+
 			return true;
 		}
 
@@ -61,9 +61,5 @@ class Route {
 		} else {
 			return "$this->mounturl($path)(/?.*)";
 		}
-	}
-
-	private function process_params() {
-
 	}
 }

@@ -14,17 +14,12 @@ class Express extends Router {
 	public $req;
 	public $res;
 
-	public $path = '/';
-	public $home;
-	public $uri;
-
 	public function __construct($mountpath = '')
 	{
 		self::$instances[] = $this;
-		$this->uri = preg_replace("#$this->home#", '', $_SERVER['REQUEST_URI']);
 
-		$this->req = new Router\Request();
-		$this->res = new Router\Response($this->mounturl);
+		$this->req = new Router\Request;
+		$this->res = new Router\Response;
 
 		if (empty($mountpath)) {
 			$this->props['mountpath'] = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
@@ -34,7 +29,6 @@ class Express extends Router {
 
 		$this->req->app = $this;
 		$this->req->baseUrl = $this->mounturl;
-		$this->res->mounturl = $this->mounturl;
 	}
 
 	public function __invoke($req, $res, $next)
@@ -47,6 +41,7 @@ class Express extends Router {
 		return function ($req, $res, $next) use ($file) {
 			require $file;
 			$next();
+			require $file;
 		};
 	}
 
@@ -63,7 +58,7 @@ class Express extends Router {
 
 		$router->req = $app->req;
 		$router->res = $app->res;
-		$router->mounturl = $app->mounturl;
+		$router->mounturl = $app->req->baseUrl;
 		self::$instances[] = $router;
 
 		return $router;
