@@ -10,10 +10,6 @@ abstract class BasicAuth extends Auth {
 				&& strpos($headers['Authorization'], 'Basic') !== false;
 	}
 
-	public function get_user() {
-		return isset($_SESSION['user']) ? (object) $_SESSION['user'] : null;
-	}
-
 	public function is_authenticated() : bool {
 
 		if (!empty($this->user) || isset($_SERVER['PHP_AUTH_USER']))
