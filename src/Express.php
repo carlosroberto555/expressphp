@@ -15,16 +15,21 @@ class Express extends Router {
 
 	public function __construct($mountpath = '')
 	{
+		// Guarda as instâncias do router
 		self::$instances[] = $this;
 
+		// Instancia o Request e o response
 		$this->req = new Router\Request;
 		$this->res = new Router\Response;
 
 		if (empty($mountpath)) {
 			$this->props['mountpath'] = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
-			$this->props['mountregexp'] = preg_replace('/(:\w+)/', '(\w+)', $this->props['mountpath']);
-			$this->props['mounturl'] = preg_replace('#('.$this->props['mountregexp'].').*#', '$1', $this->req->url);
+		} else {
+			$this->props['mountpath'] = $mountpath;
 		}
+
+		$this->props['mountregexp'] = preg_replace('/(:\w+)/', '(\w+)', $this->props['mountpath']);
+		$this->props['mounturl'] = preg_replace('#('.$this->props['mountregexp'].').*#', '$1', $this->req->url);
 
 		$this->req->app = $this;
 		$this->req->baseUrl = $this->mounturl;
@@ -53,12 +58,10 @@ class Express extends Router {
 	public static function Router() {
 
 		$app = end(self::$instances);
-		$router = new Router();
+		$router = new Express($app->req->baseUrl);
 
-		$router->req = $app->req;
-		$router->res = $app->res;
-		$router->mounturl = $app->req->baseUrl;
-		self::$instances[] = $router;
+		$router->req = clone $app->req;
+		$router->res = clone $app->res;
 
 		return $router;
 	}

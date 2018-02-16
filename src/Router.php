@@ -19,14 +19,13 @@ class Router {
 		$this->request($path, 'DELETE', ...$callbacks);
 	}
 
-	public function all(string $path, ...$callbacks)
-	{
-		$this->request($path, '.*', ...$callbacks);
+	public function all(string $path, ...$callbacks) {
+		$this->request($path, '*', ...$callbacks);
 	}
 
 	public function request(string $path, string $method, callable ...$callbacks)
 	{
-		if (preg_match("/$method/", $_SERVER['REQUEST_METHOD'])) {
+		if ($method === '*' || preg_match("/$method/", $this->req->method)) {
 
 			$url = str_replace($this->req->baseUrl, '', $this->req->url);
 			$route = new Router\Route($this->req->baseUrl, $path);
