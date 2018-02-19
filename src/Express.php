@@ -7,11 +7,7 @@ class Express extends Router {
 	use Application;
 
 	// Read-only props
-	private $props = [
-		'mountregexp' => '',
-		'mountpath' => '',
-		'mounturl' => ''
-	];
+	protected $_mountregexp, $_mountpath, $_mounturl;
 
 	public function __construct($mountpath = '')
 	{
@@ -23,13 +19,13 @@ class Express extends Router {
 		$this->res = new Router\Response;
 
 		if (empty($mountpath)) {
-			$this->props['mountpath'] = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
+			$this->_mountpath = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
 		} else {
-			$this->props['mountpath'] = $mountpath;
+			$this->_mountpath = $mountpath;
 		}
 
-		$this->props['mountregexp'] = preg_replace('/(:\w+)/', '(\w+)', $this->props['mountpath']);
-		$this->props['mounturl'] = preg_replace('#('.$this->props['mountregexp'].').*#', '$1', $this->req->url);
+		$this->_mountregexp = preg_replace('/(:\w+)/', '(\w+)', $this->_mountpath);
+		$this->_mounturl = preg_replace('#('.$this->_mountregexp.').*#', '$1', $this->req->url);
 
 		$this->req->app = $this;
 		$this->req->baseUrl = $this->mounturl;
@@ -37,9 +33,9 @@ class Express extends Router {
 
 	public function __invoke($req, $res, $next)
 	{
-		$this->props['mountregexp'] = $req->app->mountregexp;
-		$this->props['mountpath'] = $req->app->mountpath;
-		$this->props['mounturl'] = $req->app->mounturl;
+		$this->_mountregexp = $req->app->mountregexp;
+		$this->_mountpath = $req->app->mountpath;
+		$this->_mounturl = $req->app->mounturl;
 
 		$this->req->baseUrl = $req->baseUrl;
 		$next();
@@ -75,10 +71,15 @@ class Express extends Router {
 	}
 
 	public function __get($name) {
-		return $this->props[$name];
+		return $this->{"_$name"};
 	}
 
 	public function __set($name, $value) {
 		throw new \Exception('Campo de apenas leitura');
+	}
+
+	public function isset($name)
+	{
+		return isset($this->{"_$name"});
 	}
 }
