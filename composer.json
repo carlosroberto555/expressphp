@@ -9,9 +9,10 @@
             "email": "carlosrpj555@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "alpha",
     "require": {
-        "katzien/php-mime-type": "dev-master"
+        "katzien/php-mime-type": "^2.1",
+        "php": ">=7.0"
     },
     "autoload": {
         "psr-4": {

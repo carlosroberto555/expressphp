@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "88d96f32bb01b1ec4c61c0ae9fb2d4e9",
+    "content-hash": "3e099f5c2b11d57818c202401d57c178",
     "packages": [
         {
             "name": "katzien/php-mime-type",
-            "version": "dev-master",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/katzien/PhpMimeType.git",
@@ -53,12 +53,12 @@
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "dev",
-    "stability-flags": {
-        "katzien/php-mime-type": 20
-    },
+    "minimum-stability": "alpha",
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.0"
+    },
     "platform-dev": []
 }
