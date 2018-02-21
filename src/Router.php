@@ -77,9 +77,15 @@ class Router {
 			if (!$next) break;
 			$next = false;
 
-			$callback($this->req, $this->res, function () use (&$next) {
+			try {
+				$callback($this->req, $this->res, function () use (&$next) {
+					$next = true;
+				});
+			} catch (\Exception $e) {
+				$this->res->status(500);
+				$this->res->error = $e->getMessage();
 				$next = true;
-			});
+			}
 		}
 	}
 }

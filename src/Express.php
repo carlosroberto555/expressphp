@@ -75,11 +75,12 @@ class Express extends Router {
 	}
 
 	public function __set($name, $value) {
-		throw new \Exception('Campo de apenas leitura');
+		if (isset($this->{"_$name"})) {
+			throw new \Exception("O campo $name é de apenas leitura");
+		}
 	}
 
-	public function isset($name)
-	{
+	public function isset($name) {
 		return isset($this->{"_$name"});
 	}
 }
