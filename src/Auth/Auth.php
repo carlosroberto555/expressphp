@@ -3,6 +3,11 @@ namespace ExpressPHP\Auth;
 
 abstract class Auth implements \ExpressPHP\Router\RouterCallable {
 	public $user;
+	public $session_name;
+
+	public function __construct($session_name = null) {
+		$this->session_name = $session_name;
+	}
 
 	public abstract function get_user();
 	public abstract function set_user($user);
@@ -11,9 +16,10 @@ abstract class Auth implements \ExpressPHP\Router\RouterCallable {
 	public abstract function authenticate($user, $pass);
 	public abstract function use_strategie($req, $res) : bool;
 
-	public function session_start() {
+	public function session_start($options = []) {
 		if (session_status() == PHP_SESSION_NONE) {
-			session_start();
+			session_start($options);
+			session_name($this->session_name);
 		}
 	}
 
