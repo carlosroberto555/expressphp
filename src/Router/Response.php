@@ -23,8 +23,24 @@ class Response {
 		$file = pathinfo($path, PATHINFO_BASENAME);
 		$this->header('Content-Disposition', "inline; filename=\"$file\"");
 
-		// Send file to buffer
-		readfile($path);
+		// Headers e filetime
+		$filetime = filemtime($path);
+		$headers = getallheaders();
+
+		// Cache control
+		$this->header('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $filetime));
+		$this->header('Cache-Control', 'only-if-cached');
+		
+		// Se não tiver sido modificado, usa o cache
+		if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == $filetime)) {
+			$this->status(304);
+		} else {
+			$this->header('Content-transfer-encoding', 'binary');
+			$this->header('Content-length', filesize($path));
+			$this->status(200);
+			readfile($path);
+		}
+
 		$this->end();
 	}
 
