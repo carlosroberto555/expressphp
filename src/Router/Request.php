@@ -31,8 +31,8 @@ class Request {
 		return isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] === $value : false;
 	}
 
-	public function query ($key) {
-		return isset($this->query->$key) ? $this->query->$key : null;
+	public function query ($key, $default = null) {
+		return isset($this->query->$key) ? $this->query->$key : $default;
 	}
 
 	public function body ($key) {
