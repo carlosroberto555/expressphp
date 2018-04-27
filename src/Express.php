@@ -2,7 +2,7 @@
 namespace ExpressPHP;
 
 class Express extends Router {
-	
+
 	// Application trait
 	use Application;
 
@@ -49,19 +49,32 @@ class Express extends Router {
 		};
 	}
 
-	public static function static($path, $options = []) {
-		return function ($req, $res) use ($path) {
-			$res->sendFile($path.$req->path);
+	public static function render($file)
+	{
+		return function ($req, $res, $next) use ($file) {
+			include $file;
+		};
+	}
+
+	public static function static($path, $options = [])
+	{
+		return function ($req, $res, $next) use ($path) {
+			if (is_file($path.$req->path)) {
+				$res->sendFile($path.$req->path);
+			} else {
+				$next();
+			}
 		};
 	}
 
 	public static function Router() {
 
 		$app = end(self::$instances);
-		$router = new Express($app->req->baseUrl.$app->req->path);
+		$router = new Express($app->req->baseUrl);
 
 		$router->req = clone $app->req;
 		$router->res = clone $app->res;
+		$router->req->app = $router;
 
 		return $router;
 	}
