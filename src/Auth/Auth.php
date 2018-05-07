@@ -18,8 +18,8 @@ abstract class Auth implements \ExpressPHP\Router\RouterCallable {
 
 	public function session_start($options = []) {
 		if (session_status() == PHP_SESSION_NONE) {
+			//session_name($this->session_name);
 			session_start($options);
-			session_name($this->session_name);
 		}
 	}
 
