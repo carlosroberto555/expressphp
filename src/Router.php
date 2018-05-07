@@ -51,8 +51,8 @@ class Router {
 			$path = '/';
 		}
 
-		$url = str_replace($this->req->app->mounturl, '', $this->req->url);
-		$route = new Router\Route($this->req->app->mounturl, $path);
+		$url = str_replace($this->mounturl, '', $this->req->url);
+		$route = new Router\Route($this->mounturl, $path);
 
 		// Verifica se a rota bate
 		if ($route->matches($url)) {
