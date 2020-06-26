@@ -28,7 +28,7 @@ class Request {
 	}
 
 	public function type($value) {
-		return isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] === $value : false;
+		return isset($_SERVER['CONTENT_TYPE']) ? preg_match("#$value;?.*#", $_SERVER['CONTENT_TYPE']) : false;
 	}
 
 	public function query ($key, $default = null) {
