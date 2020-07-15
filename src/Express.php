@@ -1,8 +1,9 @@
 <?php
+
 namespace ExpressPHP;
 
-class Express extends Router {
-
+class Express extends Router
+{
 	// Application trait
 	use Application;
 
@@ -25,7 +26,7 @@ class Express extends Router {
 		}
 
 		$this->_mountregexp = preg_replace('/(:\w+)/', '(\w+)', $this->_mountpath);
-		$this->_mounturl = preg_replace('#('.$this->_mountregexp.').*#', '$1', $this->req->url);
+		$this->_mounturl = preg_replace('#(' . $this->_mountregexp . ').*#', '$1', $this->req->url);
 
 		$this->req->app = $this;
 		$this->req->baseUrl = $this->mounturl;
@@ -59,41 +60,38 @@ class Express extends Router {
 	public static function static($path, $options = [])
 	{
 		return function ($req, $res, $next) use ($path) {
-			if (is_file($path.$req->path)) {
-				$res->sendFile($path.$req->path);
+			if (is_file($path . $req->path)) {
+				$res->sendFile($path . $req->path);
 			} else {
 				$next();
 			}
 		};
 	}
 
-	public static function Router() {
-
-		$app = end(self::$instances);
-		$router = new Express($app->req->baseUrl);
-
-		$router->req = clone $app->req;
-		$router->res = clone $app->res;
-		$router->req->app = $router;
-
-		return $router;
+	public static function Router()
+	{
+		return self::create_app();
 	}
 
-	function trim_uri($uri) {
+	function trim_uri($uri)
+	{
 		return $uri !== '/' ? rtrim($uri, '/') : '/';
 	}
 
-	public function __get($name) {
+	public function __get($name)
+	{
 		return $this->{"_$name"};
 	}
 
-	public function __set($name, $value) {
+	public function __set($name, $value)
+	{
 		if (isset($this->{"_$name"})) {
 			throw new \Exception("O campo $name é de apenas leitura");
 		}
 	}
 
-	public function isset($name) {
+	public function isset($name)
+	{
 		return isset($this->{"_$name"});
 	}
 }
