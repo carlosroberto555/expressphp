@@ -15,10 +15,6 @@ class Express extends Router
 		// Guarda as instâncias do router
 		self::$instances[] = $this;
 
-		// Instancia o Request e o response
-		$this->req = new Router\Request;
-		$this->res = new Router\Response;
-
 		if (empty($mountpath)) {
 			$this->_mountpath = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
 		} else {
@@ -28,8 +24,8 @@ class Express extends Router
 		$this->_mountregexp = preg_replace('/(:\w+)/', '(\w+)', $this->_mountpath);
 		$this->_mounturl = preg_replace('#(' . $this->_mountregexp . ').*#', '$1', $this->req->url);
 
-		$this->req->app = $this;
-		$this->req->baseUrl = $this->mounturl;
+		// Create app props
+		$this->create_app($this->_mounturl);
 	}
 
 	public function __invoke($req, $res, $next)
@@ -70,7 +66,7 @@ class Express extends Router
 
 	public static function Router()
 	{
-		return self::create_app();
+		return self::create_router();
 	}
 
 	function trim_uri($uri)

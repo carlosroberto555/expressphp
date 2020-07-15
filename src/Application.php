@@ -10,7 +10,22 @@ trait Application
 	protected Request $req;
 	protected Response $res;
 
-	protected static function create_app()
+	/**
+	 * Creates a new express app props request and response
+	 * @param string $mounturl URL that app listens
+	 */
+	protected function create_app($mounturl)
+	{
+		// Instancia o Request e o response
+		$this->req = new Router\Request;
+		$this->res = new Router\Response;
+
+		// Add access to app class in Request and set baseurl
+		$this->req->app = $this;
+		$this->req->baseUrl = $mounturl;
+	}
+
+	protected static function create_router()
 	{
 		// Get last app from instances
 		$last_app = end(self::$instances);
