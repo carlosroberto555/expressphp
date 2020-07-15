@@ -1,15 +1,19 @@
 <?php
+
 namespace ExpressPHP\Router;
 
-class Response {
+class Response
+{
 
 	public $mounturl;
 
-	public function __construct() {
+	public function __construct()
+	{
 		$this->mounturl = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
 	}
 
-	public function send($resp) {
+	public function send($resp)
+	{
 		echo $resp;
 	}
 
@@ -30,7 +34,7 @@ class Response {
 		// Cache control
 		$this->header('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $filetime));
 		$this->header('Cache-Control', 'only-if-cached');
-		
+
 		// Se não tiver sido modificado, usa o cache
 		if (isset($headers['If-Modified-Since']) && (strtotime($headers['If-Modified-Since']) == $filetime)) {
 			$this->status(304);
@@ -44,42 +48,48 @@ class Response {
 		$this->end();
 	}
 
-	public function json($resp) {
+	public function json($resp)
+	{
 		$this->type('application/json');
 
-		if (DEBUG) {
+		if (constant('DEBUG')) {
 			echo json_encode($resp, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		} else {
 			echo json_encode($resp);
 		}
 	}
 
-	public function status($status = null) {
+	public function status($status = null)
+	{
 		return http_response_code($status);
 	}
 
-	public function header($key, $value) {
+	public function header($key, $value)
+	{
 		header("$key: $value");
 	}
 
-	public function location($loc) {
-		$loc = $this->mounturl.$loc;
+	public function location($loc)
+	{
+		$loc = $this->mounturl . $loc;
 		$this->header('Location', $loc);
 	}
 
-	public function type($type) {
+	public function type($type)
+	{
 		$this->header('Content-Type', "$type; charset=utf-8");
 	}
 
-	public function end($message = null) {
-		exit ($message);
+	public function end($message = null)
+	{
+		exit($message);
 	}
 
 	public function __call($method, $args)
-    {
-        if (isset($this->$method)) {
-            $func = $this->$method;
-            return call_user_func_array($func, $args);
-        }
-    }
+	{
+		if (isset($this->$method)) {
+			$func = $this->$method;
+			return call_user_func_array($func, $args);
+		}
+	}
 }
