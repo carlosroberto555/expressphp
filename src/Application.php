@@ -10,19 +10,34 @@ trait Application
 	protected Request $req;
 	protected Response $res;
 
+	// Read-only props
+	protected $_mountregexp, $_mountpath, $_mounturl;
+
 	/**
 	 * Creates a new express app props request and response
-	 * @param string $mounturl URL that app listens
+	 * @param string $mountpath A mount path app
 	 */
-	protected function create_app($mounturl)
+	protected function create_app($mountpath)
 	{
+		// Guarda as instâncias do router
+		self::$instances[] = $this;
+
 		// Instancia o Request e o response
 		$this->req = new Router\Request;
 		$this->res = new Router\Response;
 
+		if (empty($mountpath)) {
+			$this->_mountpath = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
+		} else {
+			$this->_mountpath = $mountpath;
+		}
+
+		$this->_mountregexp = preg_replace('/(:\w+)/', '(\w+)', $this->_mountpath);
+		$this->_mounturl = preg_replace('#(' . $this->_mountregexp . ').*#', '$1', $this->req->url);
+
 		// Add access to app class in Request and set baseurl
 		$this->req->app = $this;
-		$this->req->baseUrl = $mounturl;
+		$this->req->baseUrl = $this->mounturl;
 	}
 
 	protected static function create_router()

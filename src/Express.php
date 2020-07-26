@@ -7,25 +7,21 @@ class Express extends Router
 	// Application trait
 	use Application;
 
-	// Read-only props
-	protected $_mountregexp, $_mountpath, $_mounturl;
-
-	public function __construct($mountpath = '')
+	/**
+	 * ```php
+	 * // Example:
+	 * require '../vendor/autoload.php';
+	 * // Listen route /api/users
+	 * // Files path is /project/users
+	 * use ExpressPHP\Express as app;
+	 * $app = new app('/api/users');
+	 * ```
+	 * @param string $mountpath App path to listen on browser url
+	 */
+	public function __construct(string $mountpath = '')
 	{
-		// Guarda as instâncias do router
-		self::$instances[] = $this;
-
-		if (empty($mountpath)) {
-			$this->_mountpath = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
-		} else {
-			$this->_mountpath = $mountpath;
-		}
-
-		$this->_mountregexp = preg_replace('/(:\w+)/', '(\w+)', $this->_mountpath);
-		$this->_mounturl = preg_replace('#(' . $this->_mountregexp . ').*#', '$1', $this->req->url);
-
 		// Create app props
-		$this->create_app($this->_mounturl);
+		$this->create_app($mountpath);
 	}
 
 	public function __invoke($req, $res, $next)
