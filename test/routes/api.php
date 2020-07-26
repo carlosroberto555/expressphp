@@ -14,3 +14,11 @@ $router->get('/users', function ($req, $res) {
     ['name' => 'Antoni Partridge'],
   ]);
 });
+
+// GET /api/users/:id/uploads
+// Use any logic to change path
+// File path is static/1/test.txt
+$router->use('/users/:id/uploads', function ($req, $res, $next) {
+  // Nested app static response needs to call returns closure with params
+  app::static('static/uploads/' . $req->params->id)($req, $res, $next);
+});
