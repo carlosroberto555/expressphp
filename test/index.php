@@ -14,3 +14,5 @@ $app->get('/', function ($req, $res) {
 // Short phpinfo with arrow function (php 7.4)
 // ALL_METHODS /info
 $app->all('/info',  fn () => phpinfo());
+
+$app->use('/api', app::require('routes/api.php'));
