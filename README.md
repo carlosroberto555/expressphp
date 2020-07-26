@@ -23,7 +23,7 @@ include 'vendor/autoload.php';
 $app = new ExpressPHP\Express;
 
 $app->use('/', function ($req, $res) {
-    $res->send('Hello world!');
+  $res->send('Hello world!');
 });
 ```
 
@@ -70,7 +70,9 @@ Express has a method called static to include static content. This just send fil
 <?php
 include 'vendor/autoload.php';
 
-$app = new ExpressPHP\Express;
+use ExpressPHP\Express as app;
+
+$app = new app;
 
 $app->use('/hello', app::static('/static/index.html'));
 // $app->use('/css', app::static('/static/css'));
