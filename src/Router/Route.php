@@ -8,6 +8,7 @@ class Route
 
 	public $path;
 	public $regexp;
+	public $param_regexp = '[\w\d._]+';
 
 	public $params;
 
@@ -53,10 +54,11 @@ class Route
 	{
 		foreach ($this->params as $key => $value) {
 			// Create path regex to get param
-			$path_regex = preg_replace(["/\/:$key/", "/\/:\w+/"], ['/([\w\d]+)', '/[\w\d]+'], $this->path);
+			$regexp = $this->param_regexp;
+			$path_regexp = preg_replace(["/\/:$key/", "/\/:\w+/"], ["/($regexp)", "/$regexp"], $this->path);
 
 			// Regex the url
-			preg_match("#$path_regex#", $url, $matches);
+			preg_match("#$path_regexp#", $url, $matches);
 
 			// Get the group 1 result
 			$this->params->$key = $matches[1];
@@ -68,7 +70,7 @@ class Route
 	 */
 	private function regexp($path, $exact = false)
 	{
-		$path = preg_replace('/(:[\w\d]+)/', '[\w\d]+', $path);
+		$path = preg_replace('/(:\w+)/', $this->param_regexp, $path);
 		$path = $path == '/' ? '' : $path;
 
 		if ($exact) {
