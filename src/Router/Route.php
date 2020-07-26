@@ -8,7 +8,7 @@ class Route
 
 	public $path;
 	public $regexp;
-	public $param_regexp = '[\w\d._]+';
+	public $param_regexp = '[^/]+';
 
 	public $params;
 
