@@ -1,7 +1,9 @@
 <?php
+
 namespace ExpressPHP\Router;
 
-class Route {
+class Route
+{
 	private $mounturl;
 
 	public $path;
@@ -17,30 +19,25 @@ class Route {
 	{
 		$this->path = $path;
 		$this->mounturl = $mounturl;
+		$this->params = new \stdClass;
 
-		preg_match_all('/:(\w+)/', $path, $params);
-		$this->params = $params[1];
+		preg_match_all('/\/:(\w+)/', $path, $params);
+
+		foreach ($params[1] as $value) {
+			$this->params->$value = null;
+		}
 	}
 
 	public function matches($url, $exact = false)
 	{
 		$this->regexp = $this->regexp($this->path, $exact);
-		preg_match("#$this->regexp#", $this->mounturl.$url, $matches);
+		preg_match("#$this->regexp#", $this->mounturl . $url, $matches);
 
-		if (!empty($matches))
-		{
+		if (!empty($matches)) {
 			$this->result_url = $matches[0];
 			$this->result_baseUrl = $matches[1];
 			$this->result_path = $matches[2];
-			
-			if (empty(end($matches))) {
-				array_pop($matches);
-			} else {
-				unset($matches[2]);
-			}
-			
-			unset($matches[0], $matches[1]);
-			$this->params = (object) array_combine($this->params, $matches);
+			$this->match_params($url);
 
 			return true;
 		}
@@ -49,11 +46,29 @@ class Route {
 	}
 
 	/**
+	 * Match params route path to url
+	 * @param string $url The url to extract params
+	 */
+	private function match_params(string $url)
+	{
+		foreach ($this->params as $key => $value) {
+			// Create path regex to get param
+			$path_regex = preg_replace(["/\/:$key/", "/\/:\w+/"], ['/([\w\d]+)', '/[\w\d]+'], $this->path);
+
+			// Regex the url
+			preg_match("#$path_regex#", $url, $matches);
+
+			// Get the group 1 result
+			$this->params->$key = $matches[1];
+		}
+	}
+
+	/**
 	 * Gera o regex para a rota atual
 	 */
 	private function regexp($path, $exact = false)
 	{
-		$path = preg_replace('/(:\w+)/', '(\w+)', $path);
+		$path = preg_replace('/(:[\w\d]+)/', '[\w\d]+', $path);
 		$path = $path == '/' ? '' : $path;
 
 		if ($exact) {
