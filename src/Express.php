@@ -2,6 +2,8 @@
 
 namespace ExpressPHP;
 
+use ExpressPHP\Router\{Request, Response};
+
 class Express extends Router
 {
 	// Application trait
@@ -24,7 +26,7 @@ class Express extends Router
 		$this->create_app($mountpath);
 	}
 
-	public function __invoke($req, $res, $next)
+	public function __invoke(Request $req, Response $res, $next)
 	{
 		$this->_mountregexp = $req->app->mountregexp;
 		$this->_mountpath = $req->app->mountpath;
@@ -36,7 +38,7 @@ class Express extends Router
 
 	public static function require($file)
 	{
-		return function ($req, $res, $next) use ($file) {
+		return function (Request $req, Response $res, $next) use ($file) {
 			$next();
 			require $file;
 		};
@@ -44,18 +46,21 @@ class Express extends Router
 
 	public static function render($file)
 	{
-		return function ($req, $res, $next) use ($file) {
+		return function (Request $req, Response $res, $next) use ($file) {
 			include $file;
 		};
 	}
 
 	public static function static($path, $options = [])
 	{
-		return function ($req, $res, $next) use ($path) {
-			if (is_file($path . $req->path)) {
-				$res->sendFile($path . $req->path);
+		return function (Request $req, Response $res, $next) use ($path) {
+			$file = join('', [$path, $req->path]);
+
+			if (is_file($file)) {
+				$res->sendFile($file);
 			} else {
-				$next();
+				$res->status(404);
+				$res->end('Not found');
 			}
 		};
 	}
