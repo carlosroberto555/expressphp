@@ -4,7 +4,6 @@ namespace ExpressPHP\Router;
 
 class Response
 {
-
 	public $mounturl;
 
 	public function __construct()
@@ -71,8 +70,7 @@ class Response
 
 	public function location($loc)
 	{
-		$loc = $this->mounturl . $loc;
-		$this->header('Location', $loc);
+		$this->header('Location', $this->mounturl . $loc);
 	}
 
 	public function type($type)
@@ -88,8 +86,7 @@ class Response
 	public function __call($method, $args)
 	{
 		if (isset($this->$method)) {
-			$func = $this->$method;
-			return call_user_func_array($func, $args);
+			return call_user_func_array($this->$method, $args);
 		}
 	}
 }
