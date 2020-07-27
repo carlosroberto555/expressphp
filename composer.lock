@@ -1,64 +1,20 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3e099f5c2b11d57818c202401d57c178",
-    "packages": [
-        {
-            "name": "katzien/php-mime-type",
-            "version": "2.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/katzien/PhpMimeType.git",
-                "reference": "159dfbdcd5906442f3dad89951127f0b9dfa3b78"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/katzien/PhpMimeType/zipball/159dfbdcd5906442f3dad89951127f0b9dfa3b78",
-                "reference": "159dfbdcd5906442f3dad89951127f0b9dfa3b78",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.6"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "5.*",
-                "satooshi/php-coveralls": "1.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "MimeType\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Kat Zien"
-                }
-            ],
-            "description": "A PHP library to detect the mime type of files.",
-            "homepage": "https://github.com/katzien/PhpMimeType",
-            "keywords": [
-                "mimetype",
-                "php"
-            ],
-            "time": "2017-03-23T02:05:33+00:00"
-        }
-    ],
+    "content-hash": "d4b39ea9ec04eb73c460bc8620fb091a",
+    "packages": [],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "alpha",
+    "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.0"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }

@@ -19,7 +19,7 @@ class Response
 	public function sendFile($path)
 	{
 		// Get the mime-type
-		$type = \MimeType\MimeType::getType($path);
+		$type = mime_content_type($path);
 		$this->type($type);
 
 		// Disable auto download
