@@ -55,10 +55,10 @@ class Route
 		foreach ($this->params as $key => $value) {
 			// Create path regex to get param
 			$regexp = $this->param_regexp;
-			$path_regexp = preg_replace(["#/:$key/#", "#/:$regexp#"], ["/($regexp)/", "/$regexp"], $this->path . '/');
+			$path_regexp = preg_replace(["#/:$key(/|$)#", "#/:$regexp$1#"], ["/($regexp)/", "/$regexp"], $this->path);
 
 			// Regex the url
-			preg_match("#$path_regexp#", $url . '/', $matches);
+			preg_match("#$path_regexp#", $url, $matches);
 
 			// Get the group 1 result
 			$this->params->$key = $matches[1];
