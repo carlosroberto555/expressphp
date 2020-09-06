@@ -2,13 +2,14 @@
 
 namespace ExpressPHP;
 
+use ExpressPHP\Express;
 use ExpressPHP\Router\{Request, Response};
 
 trait Application
 {
 	protected static $instances = [];
-	protected Request $req;
-	protected Response $res;
+	protected $req;
+	protected $res;
 
 	// Read-only props
 	protected $_mountregexp, $_mountpath, $_mounturl;
@@ -23,8 +24,8 @@ trait Application
 		self::$instances[] = $this;
 
 		// Instancia o Request e o response
-		$this->req = new Router\Request;
-		$this->res = new Router\Response;
+		$this->req = new Request;
+		$this->res = new Response;
 
 		if (empty($mountpath)) {
 			$this->_mountpath = preg_replace('/\/\w+.php$/', '', $_SERVER['PHP_SELF']);
