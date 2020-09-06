@@ -2,6 +2,7 @@
 
 namespace ExpressPHP;
 
+use ExpressPHP\Router;
 use ExpressPHP\Router\{Request, Response};
 
 class Express extends Router
