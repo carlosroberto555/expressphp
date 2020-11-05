@@ -57,7 +57,7 @@ class Express extends Router
 		return function (Request $req, Response $res, $next) use ($path) {
 			$file = join('', [$path, $req->path]);
 
-			if (is_file($file)) {
+			if (is_file($file) || is_file($file . '/index.html')) {
 				$res->sendFile($file);
 			} else {
 				$res->status(404);
