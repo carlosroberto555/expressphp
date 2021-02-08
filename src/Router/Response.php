@@ -93,11 +93,12 @@ class Response
 
 function get_mimetype(string $path)
 {
-  $exten = preg_replace('#.*\.(.*)$#', '$1', $path);
+  $pathinfo = pathinfo($path);
+  $exten = $pathinfo['extension'];
   $type = mime_content_type($path);
 
   // fallback if got wrong mime type
-  if ($exten !== 'html' && $type === 'text/html') {
+  if ($exten !== 'html' && $type === 'text/html' || $type === 'text/plain') {
     switch ($exten) {
       case 'js':
         return 'application/javascript';
