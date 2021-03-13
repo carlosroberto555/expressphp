@@ -22,7 +22,7 @@ class Route
     $this->mounturl = $mounturl;
     $this->params = new \stdClass;
 
-    preg_match_all('/\/:(\w+)/', $path, $params);
+    preg_match_all('/\/:([^\/]+)/', $path, $params);
 
     foreach ($params[1] as $value) {
       $this->params->$value = null;
@@ -55,8 +55,10 @@ class Route
     foreach ($this->params as $key => $value) {
       // Create path regex to get param
       $regexp = $this->param_regexp;
-      $path_regexp = preg_replace(["#/:$key(/|$)#", "#/:$regexp$1#"], ["/($regexp)/", "/$regexp"], $this->path);
       $safe_slash_url = rtrim($url, '/') . '/';
+      $safe_slash_path = rtrim($this->path, '/') . '/';
+
+      $path_regexp = preg_replace(["#/:$key/#", "#/:$regexp/#"], ["/($regexp)/", "/$regexp/"], $safe_slash_path);
 
       // Regex the url
       preg_match("#$path_regexp#", $safe_slash_url, $matches);
