@@ -98,20 +98,16 @@ function get_mimetype(string $path)
   $type = mime_content_type($path);
 
   // fallback if got wrong mime type
-  if ($exten !== 'html' && $type === 'text/html' || $type === 'text/plain') {
-    switch ($exten) {
-      case 'js':
-        return 'application/javascript';
-      case 'json':
-        return 'application/json';
-      case 'css':
-        return 'text/css';
-      case 'html':
-        return 'text/html';
-      default:
-        return 'text/plain';
-    }
+  switch ($exten) {
+    case 'js':
+      return 'application/javascript';
+    case 'json':
+      return 'application/json';
+    case 'css':
+      return 'text/css';
+    case 'html':
+      return 'text/html';
+    default:
+      return $type || 'text/plain';
   }
-
-  return $type;
 }
