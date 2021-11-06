@@ -105,6 +105,9 @@ function get_mimetype(string $path)
       return 'application/json';
     case 'css':
       return 'text/css';
+    case 'svg':
+    case 'svgz':
+      return 'image/svg+xml';
     case 'html':
       return 'text/html';
     default:
